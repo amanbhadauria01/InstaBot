@@ -23,6 +23,8 @@ class InstaDM(object) :
             "comment_username" : '//*[@id="react-root"]/section/main/div/ul/ul/div/li/div/div/div[2]/h3/div/a',
             "comment_text" : '//*[@id="react-root"]/section/main/div/ul/ul/div/li/div/div/div[2]/span',
             "delete_comment_btn" : '//button[text()="Delete"]',
+            "reply_comment_btn" : "//button[text()='Reply']",
+            "reply_comment_field" : '//*[@id="react-root"]/section/main/section/div[1]/form/textarea',
             "more_comment_btn" : '//*[@id="react-root"]/section/main/div/ul/li/div/button/div',
             "follower_btn" : '//*[@id="react-root"]/section/main/div/ul/li[2]',
             "follower_handle" : 't2ksc',
@@ -43,9 +45,9 @@ class InstaDM(object) :
         options = webdriver.ChromeOptions()
 
         # specific profile
-        # profile_added = False
-        profile_added = True
-        options.add_argument("user-data-dir=C:\\Users\\Amandeep\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 13")
+        profile_added = False
+        # profile_added = True
+        # options.add_argument("user-data-dir=C:\\Users\\Amandeep\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 13")
 
         # mobile
         mobile_emulation = {
@@ -73,12 +75,8 @@ class InstaDM(object) :
             # 2. editing comments - cannot do on instagram
             # 3. deleting comments - done
             # 4. followers list - done
-            #    4.1 scaling followers list found 1472 handles found
-                    # Message: disconnected: Unable to receive message from renderer
-                    #   (Session info: chrome=97.0.4692.99)
-            #    4.2 found 1840 handles found
-            #    4.3 found 2813 handles with new account and reducing wait to random(1,3)
-            #    4.4 found 2520 handles with another new account and reducing wait to 0.1 sec. keeps buffering afterward
+            #    4.1 scaling followers list found 1472,1840,2813,2520 handles found in different attempts
+            # 5. replying to comments - done
         except Exception as e:
             print(str(e))
 
@@ -142,6 +140,24 @@ class InstaDM(object) :
                 if(self.is_element_present(By.XPATH,"..",usernames[i])):
                     print("parent found")
                     parent = self.__get_element__("..",'xpath',usernames[i])
+                    print(parent.text)
+                    if(self.is_element_present(By.XPATH,self.selectors['reply_comment_btn'],parent)):
+                        print("reply btn found")
+                        reply_btn = self.__get_element__(self.selectors['reply_comment_btn'],'xpath',parent)
+                        reply_btn.click()
+                        self.__random_sleep__(3,5)
+                        if(self.is_element_present(By.XPATH,self.selectors['reply_comment_field'])):
+                            print("reply field found")
+                            line = "custom reply"
+                            self.driver.find_element(By.XPATH, self.selectors['reply_comment_field']).send_keys(line)
+                            print('wrote comment in comment_field')
+                            if self.__wait_for_element__(self.selectors['comment_post'],'xpath',10):
+                                self.__scrollup__()
+                                self.__get_element__(self.selectors['comment_post'],'xpath').click()
+                                print('posted reply comment ' + line)
+                            else :
+                                print('couldnot post reply comment')
+
 
                 self.__random_sleep__(300,500)
 
@@ -317,19 +333,20 @@ Stewart and his team put out several issues of The Whole Earth Catalog, and then
             print(data)
 
     def __get_element__(self, element_tag, locator,dr = -1):
+        if dr == -1 :
+            dr = self.driver
         """Wait for element and then return when it is available"""
         try:
             locator = locator.upper()
-            dr = self.driver
-            if locator == 'ID' and self.is_element_present(By.ID, element_tag):
+            if locator == 'ID' and self.is_element_present(By.ID, element_tag, dr):
                 return WebDriverWait(dr, 15).until(lambda d: dr.find_element(By.ID,element_tag))
-            elif locator == 'NAME' and self.is_element_present(By.NAME, element_tag):
+            elif locator == 'NAME' and self.is_element_present(By.NAME, element_tag, dr):
                 return WebDriverWait(dr, 15).until(lambda d: dr.find_element(By.NAME,element_tag))
-            elif locator == 'XPATH' and self.is_element_present(By.XPATH, element_tag):
+            elif locator == 'XPATH' and self.is_element_present(By.XPATH, element_tag, dr):
                 return WebDriverWait(dr, 15).until(lambda d: dr.find_element(By.XPATH,element_tag))
-            elif locator == 'CSS' and self.is_element_present(By.CSS_SELECTOR, element_tag):
+            elif locator == 'CSS' and self.is_element_present(By.CSS_SELECTOR, element_tag, dr):
                 return WebDriverWait(dr, 15).until(lambda d: dr.find_element(By.CSS_SELECTOR,element_tag))
-            elif locator == "CLASS" and self.is_element_present(By.CLASS_NAME,element_tag):
+            elif locator == "CLASS" and self.is_element_present(By.CLASS_NAME,element_tag, dr):
                 return WebDriverWait(dr, 15).until(lambda d: dr.find_element(By.CLASS_NAME,element_tag))
             else:
                 logging.info(f"Error: Incorrect locator = {locator}")
@@ -338,20 +355,21 @@ Stewart and his team put out several issues of The Whole Earth Catalog, and then
         logging.info(f"Element not found with {locator} : {element_tag}")
         return None
 
-    def __get_elements__(self, element_tag, locator):
+    def __get_elements__(self, element_tag, locator,dr = -1):
+        if dr == -1 :
+            dr = self.driver
         """Wait for element and then return when it is available"""
         try:
             locator = locator.upper()
-            dr = self.driver
-            if locator == 'ID' and self.is_element_present(By.ID, element_tag):
+            if locator == 'ID' and self.is_element_present(By.ID, element_tag, dr):
                 return WebDriverWait(dr, 15).until(lambda d: dr.find_elements(By.ID,element_tag))
-            elif locator == 'NAME' and self.is_element_present(By.NAME, element_tag):
+            elif locator == 'NAME' and self.is_element_present(By.NAME, element_tag, dr):
                 return WebDriverWait(dr, 15).until(lambda d: dr.find_elements(By.NAME,element_tag))
-            elif locator == 'XPATH' and self.is_element_present(By.XPATH, element_tag):
+            elif locator == 'XPATH' and self.is_element_present(By.XPATH, element_tag, dr):
                 return WebDriverWait(dr, 15).until(lambda d: dr.find_elements(By.XPATH,element_tag))
-            elif locator == 'CSS' and self.is_element_present(By.CSS_SELECTOR, element_tag):
+            elif locator == 'CSS' and self.is_element_present(By.CSS_SELECTOR, element_tag, dr):
                 return WebDriverWait(dr, 15).until(lambda d: dr.find_elements(By.CSS_SELECTOR,element_tag))
-            elif locator == "CLASS" and self.is_element_present(By.CLASS_NAME,element_tag):
+            elif locator == "CLASS" and self.is_element_present(By.CLASS_NAME,element_tag, dr):
                 return WebDriverWait(dr, 15).until(lambda d: dr.find_elements(By.CLASS_NAME,element_tag))
             else:
                 logging.info(f"Error: Incorrect locator = {locator}")
@@ -370,33 +388,25 @@ Stewart and his team put out several issues of The Whole Earth Catalog, and then
             return False
         return True
 
-    # def is_element_present(self, how, what):
-    #     """Check if an element is present"""
-    #     try:
-    #         self.driver.find_element(by=how, value=what)
-    #     except NoSuchElementException:
-    #         return False
-    #     return True
-
-    def  __wait_for_element__(self,element_tag,locator,timeout = 30):
+    def  __wait_for_element__(self,element_tag,locator,timeout = 30,dr = -1):
         result = False
         locator = locator.upper()
         for i in range(timeout):
             initTime = time()
             try:
-                if locator == 'ID' and self.is_element_present(By.ID, element_tag):
+                if locator == 'ID' and self.is_element_present(By.ID, element_tag,dr):
                     result = True
                     break
-                elif locator == 'NAME' and self.is_element_present(By.NAME, element_tag):
+                elif locator == 'NAME' and self.is_element_present(By.NAME, element_tag,dr):
                     result = True
                     break
-                elif locator == 'XPATH' and self.is_element_present(By.XPATH, element_tag):
+                elif locator == 'XPATH' and self.is_element_present(By.XPATH, element_tag,dr):
                     result = True
                     break
-                elif locator == 'CSS' and self.is_element_present(By.CSS_SELECTORS, element_tag):
+                elif locator == 'CSS' and self.is_element_present(By.CSS_SELECTORS, element_tag,dr):
                     result = True
                     break
-                elif locator == 'CLASS' and self.is_element_present(By.CLASS_NAME, element_tag) :
+                elif locator == 'CLASS' and self.is_element_present(By.CLASS_NAME, element_tag,dr) :
                     result = True
                     break
                 else:
@@ -416,12 +426,16 @@ Stewart and his team put out several issues of The Whole Earth Catalog, and then
         t = randint(minimum, maximum)
         logging.info(f'Wait {t} seconds')
         sleep(t)
-    def __scrolldown__(self):
-        self.driver.execute_script(
+    def __scrolldown__(self,dr=-1):
+        if dr == -1 :
+            dr = self.driver
+        dr.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
 
-    def __scrollup__(self):
-        self.driver.execute_script(
+    def __scrollup__(self,dr=-1):
+        if dr == -1 :
+            dr = self.driver
+        dr.execute_script(
             "window.scrollTo(0, -document.body.scrollHeight);")
 
 def main():
@@ -429,7 +443,7 @@ def main():
     # obj = InstaDM('amandrive102','b@o-0_7IdJ4FR7h')
     # obj = InstaDM('amandrive103','W_j9f71-YeFN9!q')
     # obj = InstaDM('amandrive104','UG7SR-8Kt@f6pCS')
-    obj = InstaDM(acc[0][0],acc[0][1])
+    obj = InstaDM(acc[3][0],acc[3][1])
     sleep(100000)
 
 if __name__ == "__main__" :
