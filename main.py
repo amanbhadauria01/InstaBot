@@ -7,6 +7,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from random import randint, uniform
 from time import time, sleep
+import pandas as pd
 import logging
 
 DEFAULT_IMPLICIT_WAIT = 1
@@ -389,6 +390,7 @@ Stewart and his team put out several issues of The Whole Earth Catalog, and then
         return True
 
     def  __wait_for_element__(self,element_tag,locator,timeout = 30,dr = -1):
+
         result = False
         locator = locator.upper()
         for i in range(timeout):
@@ -439,11 +441,8 @@ Stewart and his team put out several issues of The Whole Earth Catalog, and then
             "window.scrollTo(0, -document.body.scrollHeight);")
 
 def main():
-    acc = [['amandrive102','b@o-0_7IdJ4FR7h'],['amandrive103','W_j9f71-YeFN9!q'],['amandrive104','UG7SR-8Kt@f6pCS'],['amandrive105','z$o7P$rK@S9pnjC']]
-    # obj = InstaDM('amandrive102','b@o-0_7IdJ4FR7h')
-    # obj = InstaDM('amandrive103','W_j9f71-YeFN9!q')
-    # obj = InstaDM('amandrive104','UG7SR-8Kt@f6pCS')
-    obj = InstaDM(acc[3][0],acc[3][1])
+    accounts = pd.read_csv('accounts.csv')
+    obj = InstaDM(accounts.iloc[3,0],accounts.iloc[3,1])
     sleep(100000)
 
 if __name__ == "__main__" :
