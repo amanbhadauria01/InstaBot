@@ -30,6 +30,10 @@ class InstaDM(object) :
             "follower_btn" : '//*[@id="react-root"]/section/main/div/ul/li[2]',
             "follower_handle" : 't2ksc',
             "follower_name" : '//*[@id="react-root"]/section/main/div/ul/div/li[1]/div/div[1]/div[2]/div[2]',
+            "follow_btn" : '//*[@id="react-root"]/section/main/div/header/section/div[2]/div/div/div/span/span[1]/button',
+            "msg_btn" : '//*[@id="react-root"]/section/main/div/header/section/div[2]/div/div[1]/button',
+            "msg_field" : '//*[@id="react-root"]/section/div[2]/div/div/div[2]/div/div/div/textarea',
+            "send_msg_btn" : '//*[@id="react-root"]/section/div[2]/div/div/div[2]/div/div/div[2]/button',
             "cancel" : "//button[text()='Cancel']",
             "username_field": "username",
             "password_field": "password",
@@ -46,9 +50,9 @@ class InstaDM(object) :
         options = webdriver.ChromeOptions()
 
         # specific profile
-        profile_added = False
-        # profile_added = True
-        # options.add_argument("user-data-dir=C:\\Users\\Amandeep\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 13")
+        # profile_added = False
+        profile_added = True
+        options.add_argument("user-data-dir=C:\\Users\\Amandeep\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 13")
 
         # mobile
         mobile_emulation = {
@@ -63,14 +67,17 @@ class InstaDM(object) :
         maahipiclink = 'https://www.instagram.com/p/B8i2DhXlwW0/'
         maahi_profile_handle = 'mahi7781'
         mypiclink = 'https://www.instagram.com/p/CZbpcllPEBY/'
+        user_handle = 'amandrive105'
+        text = 'hi'
         try:
             if(profile_added == False):
                 self.login(username, password)
+            self.dm(user_handle,text)
             # self.post_comments_on_pic('https://www.instagram.com/p/CZbpcllPEBY/')
             # self.read_comments_on_pic(mypiclink)
             # self.delete_comments_on_pic('https://www.instagram.com/p/CZbpcllPEBY/')
             # self.followers_list(maahi_profile_handle)
-            self.reply_comments_on_pic(mypiclink)
+            # self.reply_comments_on_pic(mypiclink)
             # what this bot can do :
             # 1. scrolling a little and accessing more comments - done
             # 2. editing comments - cannot do on instagram
@@ -78,6 +85,7 @@ class InstaDM(object) :
             # 4. followers list - done
             #    4.1 scaling followers list found 1472,1840,2813,2520 handles found in different attempts
             # 5. replying to comments - done
+            # 6. dm
         except Exception as e:
             print(str(e))
 
@@ -119,6 +127,33 @@ class InstaDM(object) :
                 print('clicked on Cancel')
             else:
                 print('Login Failed: Incorrect credentials')
+
+    def dm(self,user_handle,text):
+        link = f'https://www.instagram.com/{user_handle}/?hl=en'
+        self.__random_sleep__(3,5)
+        self.driver.get(link)
+        # if not followed follow it
+        if self.__wait_for_element__(self.selectors['follow_btn'],'xpath',10):
+            print('following')
+            self.__get_element__(self.selectors['follow_btn'],'xpath').click()
+            if self.__wait_for_element__(self.selectors['cancel'],'xpath',10):
+                print('cancelling')
+                self.__get_element__(self.selectors['cancel'],'xpath').click()
+        else:
+            print('already followed')
+        # msging
+        if self.__wait_for_element__(self.selectors['msg_btn'],'xpath',10):
+            print('msg btn found')
+            self.__get_element__(self.selectors['msg_btn'],'xpath').click()
+            if self.__wait_for_element__(self.selectors['msg_field'],'xpath',10):
+                print('msg field found')
+                self.__get_element__(self.selectors['msg_field'],'xpath').send_keys(text)
+                if(self.__wait_for_element__(self.selectors['send_msg_btn'],'xpath',10)) :
+                    print('send msg btn found')
+                    self.__get_element__(self.selectors['send_msg_btn'],'xpath').click()
+        else :
+            print('msg btn not found')
+
 
     def reply_comments_on_pic(self,post_link):
         self.__random_sleep__(3, 5)
@@ -442,7 +477,7 @@ Stewart and his team put out several issues of The Whole Earth Catalog, and then
 
 def main():
     accounts = pd.read_csv('accounts.csv')
-    obj = InstaDM(accounts.iloc[3,0],accounts.iloc[3,1])
+    obj = InstaDM(accounts.iloc[0,0],accounts.iloc[0,1])
     sleep(100000)
 
 if __name__ == "__main__" :
