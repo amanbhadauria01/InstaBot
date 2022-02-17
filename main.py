@@ -33,6 +33,10 @@ class InstaDM(object) :
             "msg_btn" : '//*[@id="react-root"]/section/main/div/header/section/div[2]/div/div[1]/button',
             "msg_field" : '//*[@id="react-root"]/section/div[2]/div/div/div[2]/div/div/div/textarea',
             "send_msg_btn" : '//*[@id="react-root"]/section/div[2]/div/div/div[2]/div/div/div[2]/button',
+            "new_msg_btn" : "//div[@class='QBdPU ']",
+            "new_msg_handle_search_field" : "//input[@placeholder='Search...']",
+            "img_of_users_in_new_msg_search" : "//input[@placeholder='Search...']//following::img",
+            "next_btn_in_sending_msg_in_inbox" : "//div[text()='Next']",
             "cancel" : "//button[text()='Cancel']",
             "username_field": "username",
             "password_field": "password",
@@ -51,7 +55,7 @@ class InstaDM(object) :
         # specific profile
         profile_added = False
         # profile_added = True
-        # options.add_argument("user-data-dir=C:\\Users\\Amandeep\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 13")
+        # # options.add_argument("user-data-dir=C:\\Users\\Amandeep\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 13")
         # options.add_argument("user-data-dir=C:\\Users\\aggar\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 13")
         # mobile
         mobile_emulation = {
@@ -67,16 +71,16 @@ class InstaDM(object) :
         maahi_profile_handle = 'mahi7781'
         mplpoker_handle = 'mplpoker'
         mypiclink = 'https://www.instagram.com/p/CZbpcllPEBY/'
-        user_handle = 'amandrive105'
+        user_handle = 'amandrive102'
         text = 'hi'
         try:
             if(profile_added == False):
                 self.login(username, password)
-            # self.dm(user_handle,text)
+            self.dm_by_inbox(user_handle,text)
             # self.post_comments_on_pic('https://www.instagram.com/p/CZbpcllPEBY/')
             # self.read_comments_on_pic(mypiclink)
             # self.delete_comments_on_pic('https://www.instagram.com/p/CZbpcllPEBY/')
-            self.followers_list(mplpoker_handle)
+            # self.followers_list(mplpoker_handle)
             # self.reply_comments_on_pic(mypiclink)
             # what this bot can do :
             # 1. scrolling a little and accessing more comments - done
@@ -128,7 +132,31 @@ class InstaDM(object) :
             else:
                 print('Login Failed: Incorrect credentials')
 
-    def dm(self,user_handle,text):
+    def dm_by_inbox(self,user_handle,text):
+        self.driver.get('https://www.instagram.com/direct/inbox/?hl=en')
+        self.__random_sleep__(3,5)
+        if self.__wait_for_element__(self.selectors['new_msg_btn'],'xpath',10):
+            print('new msg btn found')
+            self.__get_element__(self.selectors['new_msg_btn'],'xpath').click()
+            if self.__wait_for_element__(self.selectors['new_msg_handle_search_field'],'xpath',10):
+                self.__get_element__(self.selectors['new_msg_handle_search_field'],'xpath').send_keys(user_handle)
+                if self.__wait_for_element__(self.selectors['img_of_users_in_new_msg_search'],'xpath',10):
+                    if len(self.__get_elements__(self.selectors['img_of_users_in_new_msg_search'],'xpath')) >= 1 :
+                        self.__get_element__(self.selectors['img_of_users_in_new_msg_search'],'xpath').click()
+                        if self.__wait_for_element__(self.selectors['next_btn_in_sending_msg_in_inbox'],'xpath',10):
+                            self.__get_element__(self.selectors['next_btn_in_sending_msg_in_inbox'],'xpath').click()
+                            if self.__wait_for_element__(self.selectors['msg_field'], 'xpath', 10):
+                                print('msg field found')
+                                self.__get_element__(self.selectors['msg_field'], 'xpath').send_keys(text)
+                                if (self.__wait_for_element__(self.selectors['send_msg_btn'], 'xpath', 10)):
+                                    print('send msg btn found')
+                                    self.__get_element__(self.selectors['send_msg_btn'], 'xpath').click()
+                    else :
+                        print('user handle wrong')
+
+
+
+    def dm_by_profilepage(self,user_handle,text):
         link = f'https://www.instagram.com/{user_handle}/?hl=en'
         self.__random_sleep__(3,5)
         self.driver.get(link)
