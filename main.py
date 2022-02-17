@@ -1,5 +1,4 @@
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager as CM
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
@@ -50,10 +49,10 @@ class InstaDM(object) :
         options = webdriver.ChromeOptions()
 
         # specific profile
-        # profile_added = False
-        profile_added = True
-        options.add_argument("user-data-dir=C:\\Users\\Amandeep\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 13")
-
+        profile_added = False
+        # profile_added = True
+        # options.add_argument("user-data-dir=C:\\Users\\Amandeep\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 13")
+        # options.add_argument("user-data-dir=C:\\Users\\aggar\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 13")
         # mobile
         mobile_emulation = {
             "userAgent": 'Mozilla/5.0 (Linux; Android 10.0; iPhone Xs Max Build/IML74K) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/91.0.4472.77 Mobile Safari/535.19'
@@ -66,24 +65,25 @@ class InstaDM(object) :
         self.driver.set_window_size(414, 936)
         maahipiclink = 'https://www.instagram.com/p/B8i2DhXlwW0/'
         maahi_profile_handle = 'mahi7781'
+        mplpoker_handle = 'mplpoker'
         mypiclink = 'https://www.instagram.com/p/CZbpcllPEBY/'
         user_handle = 'amandrive105'
         text = 'hi'
         try:
             if(profile_added == False):
                 self.login(username, password)
-            self.dm(user_handle,text)
+            # self.dm(user_handle,text)
             # self.post_comments_on_pic('https://www.instagram.com/p/CZbpcllPEBY/')
             # self.read_comments_on_pic(mypiclink)
             # self.delete_comments_on_pic('https://www.instagram.com/p/CZbpcllPEBY/')
-            # self.followers_list(maahi_profile_handle)
+            self.followers_list(mplpoker_handle)
             # self.reply_comments_on_pic(mypiclink)
             # what this bot can do :
             # 1. scrolling a little and accessing more comments - done
             # 2. editing comments - cannot do on instagram
             # 3. deleting comments - done
             # 4. followers list - done
-            #    4.1 scaling followers list found 1472,1840,2813,2520 handles found in different attempts
+            #    4.1 scaling followers list found 1472,1840,2813,2520,5204 handles found in different attempts
             # 5. replying to comments - done
             # 6. dm
         except Exception as e:
@@ -477,7 +477,7 @@ Stewart and his team put out several issues of The Whole Earth Catalog, and then
 
 def main():
     accounts = pd.read_csv('accounts.csv')
-    obj = InstaDM(accounts.iloc[0,0],accounts.iloc[0,1])
+    obj = InstaDM(accounts.iloc[3,0],accounts.iloc[3,1])
     sleep(100000)
 
 if __name__ == "__main__" :
