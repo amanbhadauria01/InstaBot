@@ -401,9 +401,7 @@ Stewart and his team put out several issues of The Whole Earth Catalog, and then
                 print(len(follower_data))
         else :
             print("follower_btn not found")
-        # printing
-        for data in follower_data :
-            print(data)
+        return follower_data
 
     def __get_element__(self, element_tag, locator,dr = -1):
         if dr == -1 :

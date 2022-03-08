@@ -8,3 +8,9 @@ You can do the following using this bot :
 5. DM people on instagram
 
 ## Example : 
+
+To find all followers of a public account having handle xyz : 
+```
+   obj = InstaDM(user_handle,user_password)
+   follower_data = obj.(followers_list(xyz)) 
+```
