@@ -1,7 +1,10 @@
-# InstaBot
-This bot uses selenium, python.
-Using this bot you can do the following. 
-1.login
-2.comment.
-3.reply to a comment.
-4.delete. 
+# Instagram Direct Message Bot
+
+You can do the following using this bot :  
+1. Login to instagram 
+2. Read comments on a post 
+3. Delete comments on a post
+4. Find all followers of a public account
+5. DM people on instagram
+
+## Example : 

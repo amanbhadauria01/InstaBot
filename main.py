@@ -47,7 +47,8 @@ class InstaDM(object) :
             "name": "((//div[@aria-labelledby]/div/span//img[@data-testid='user-avatar'])[1]//..//..//..//div[2]/div[2]/div)[1]",
             "next_button": "//button/*[text()='Next']",
             "textarea": "//textarea[@placeholder]",
-            "send": "//button[text()='Send']"
+            "send": "//button[text()='Send']",
+            "number_of_comments_in_post_page" : "//div[@class='_7UhW9   xLCgt      MMzan    _0PwGv         uL8Hv        T0kll ']//following::span"
         }
         # options
         options = webdriver.ChromeOptions()
@@ -76,8 +77,8 @@ class InstaDM(object) :
         try:
             if(profile_added == False):
                 self.login(username, password)
-            self.dm_by_inbox(user_handle,text)
-            # self.post_comments_on_pic('https://www.instagram.com/p/CZbpcllPEBY/')
+            # self.dm_by_inbox(user_handle,text)
+            self.post_comments_on_pic('https://www.instagram.com/p/CajqJ4XKCfb/')
             # self.read_comments_on_pic(mypiclink)
             # self.delete_comments_on_pic('https://www.instagram.com/p/CZbpcllPEBY/')
             # self.followers_list(mplpoker_handle)
@@ -90,6 +91,8 @@ class InstaDM(object) :
             #    4.1 scaling followers list found 1472,1840,2813,2520,5204 handles found in different attempts
             # 5. replying to comments - done
             # 6. dm
+            #    6.1 messaging from profile page - done ( can message public profile only )
+            #    6.2 messaging from inbox   - done ( can message both public and private profiles)
         except Exception as e:
             print(str(e))
 
@@ -310,6 +313,8 @@ When I was young, there was an amazing publication called The Whole Earth Catalo
 
 Stewart and his team put out several issues of The Whole Earth Catalog, and then when it had run its course, they put out a final issue. It was the mid-1970s, and I was your age. On the back cover of their final issue was a photograph of an early morning country road, the kind you might find yourself hitchhiking on if you were so adventurous. Beneath it were the words: “Stay Hungry. Stay Foolish.” It was their farewell message as they signed off. Stay Hungry. Stay Foolish. And I have always wished that for myself. And now, as you graduate to begin anew, I wish that for you.'''
         lines = essay.split('.')
+        cnt = 0
+        self.__scrolldown__()
         if self.__wait_for_element__(self.selectors['comment_icon'],'xpath',10):
             self.__get_element__(self.selectors['comment_icon'],'xpath').click()
             print('went to comment section')
@@ -326,6 +331,10 @@ Stewart and his team put out several issues of The Whole Earth Catalog, and then
                         print('couldnot post comment')
                 else :
                     print('couldnot find comment_field')
+                cnt+=1
+                if cnt == 5 :
+                    sleep(300)
+                    cnt = 0
         else :
             print('couldnot find comment_icon')
 
@@ -505,7 +514,7 @@ Stewart and his team put out several issues of The Whole Earth Catalog, and then
 
 def main():
     accounts = pd.read_csv('accounts.csv')
-    obj = InstaDM(accounts.iloc[3,0],accounts.iloc[3,1])
+    obj = InstaDM(accounts.iloc[2,0],accounts.iloc[2,1])
     sleep(100000)
 
 if __name__ == "__main__" :
